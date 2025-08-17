@@ -10,9 +10,14 @@ import java.util.Optional;
 
 public interface CategoryService {
     Optional<CategoryModel> findById(Long id);
+
     List<CategoryModel> findAll();
+
     Page<CategoryModel> findAll(Pageable pageable);
+
     CategoryDTO save(CategoryDTO categoryDTO);
-    CategoryModel update(Long id, CategoryDTO categoryDTO);
+
+    CategoryDTO update(Long id, CategoryDTO categoryDTO);
+
     void deleteById(Long id);
 }

@@ -81,18 +81,18 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ProductDTO> save(@RequestBody ProductDTO productDTO) {
         ProductDTO saved = productService.save(productDTO);
-        return ResponseEntity.status(201).body(saved);
+        return ResponseEntity.ok(saved);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductDTO> update(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
-        ProductModel updatedProduct = productService.update(id, productDTO);
+        ProductDTO updatedProduct = productService.update(id, productDTO);
 
         if (updatedProduct == null) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(ProductMapper.toDTO(updatedProduct));
+        return ResponseEntity.ok(updatedProduct);
     }
 
     @DeleteMapping("/{id}")

@@ -4,11 +4,9 @@ import com.ast.storagemdp_api.dto.ProductDTO;
 import com.ast.storagemdp_api.models.CategoryModel;
 import com.ast.storagemdp_api.models.ProductModel;
 
-import java.util.Objects;
-
 public class ProductMapper {
-    public static ProductDTO toDTO(ProductModel entity){
-        if(entity == null){
+    public static ProductDTO toDTO(ProductModel entity) {
+        if (entity == null) {
             return null;
         }
 
@@ -22,8 +20,8 @@ public class ProductMapper {
         return dto;
     }
 
-    public static ProductModel toEntity(ProductDTO dto){
-        if(dto == null){
+    public static ProductModel toEntity(ProductDTO dto) {
+        if (dto == null) {
             return null;
         }
 
@@ -33,14 +31,9 @@ public class ProductMapper {
         entity.setPrice(dto.getPrice());
         entity.setQuantity(dto.getQuantity());
 
-        if (Objects.nonNull(dto.getCategoryId()) || Objects.nonNull(dto.getCategoryName())) {
+        if (dto.getCategoryId() != null) {
             CategoryModel category = new CategoryModel();
-            if (Objects.nonNull(dto.getCategoryId())) {
-                category.setId(dto.getCategoryId());
-            }
-            if (Objects.nonNull(dto.getCategoryName())) {
-                category.setName(dto.getCategoryName());
-            }
+            category.setId(dto.getCategoryId());
             entity.setCategory(category);
         }
 

@@ -51,18 +51,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductModel update(Long id, ProductDTO productDTO){
+    public ProductDTO update(Long id, ProductDTO productDTO){
         return productRepository.findById(id)
                 .map(existing -> {
                     existing.setName(productDTO.getName());
                     existing.setPrice(productDTO.getPrice());
-                    return productRepository.save(existing);
+                    ProductModel updated = productRepository.save(existing);
+                    return ProductMapper.toDTO(updated);
                 })
-                .orElse(null);
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
     }
 
     @Override
     public void deleteById(Long id){
+        if (!productRepository.existsById(id)) {
+            throw new RuntimeException("Product not found with id: " + id);
+        }
         productRepository.deleteById(id);
     }
 }

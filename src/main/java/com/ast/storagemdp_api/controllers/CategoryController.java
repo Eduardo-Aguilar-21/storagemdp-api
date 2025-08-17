@@ -1,11 +1,8 @@
 package com.ast.storagemdp_api.controllers;
 
 import com.ast.storagemdp_api.dto.CategoryDTO;
-import com.ast.storagemdp_api.dto.ProductDTO;
 import com.ast.storagemdp_api.mappers.CategoryMapper;
-import com.ast.storagemdp_api.mappers.ProductMapper;
 import com.ast.storagemdp_api.models.CategoryModel;
-import com.ast.storagemdp_api.models.ProductModel;
 import com.ast.storagemdp_api.services.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -57,18 +54,16 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<CategoryDTO> save(@RequestBody CategoryDTO categoryDTO){
         CategoryDTO saved  = categoryService.save(categoryDTO);
-        return ResponseEntity.status(201).body(saved);
+        return ResponseEntity.ok(saved);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CategoryDTO> update(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO) {
-        CategoryModel updatedCategory = categoryService.update(id, categoryDTO);
-
-        if (updatedCategory == null) {
+        CategoryDTO updated = categoryService.update(id, categoryDTO);
+        if (updated == null) {
             return ResponseEntity.notFound().build();
         }
-
-        return ResponseEntity.ok(CategoryMapper.toDTO(updatedCategory));
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
