@@ -1,5 +1,6 @@
 package com.ast.storagemdp_api.security.filtrers;
 
+import com.ast.storagemdp_api.models.UserModel;
 import com.ast.storagemdp_api.security.jwt.JwtUtils;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
@@ -22,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class JwtAuthenticationFilter {
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private JwtUtils jwtUtils;
 
     public JwtAuthenticationFilter(JwtUtils jwtUtils){
