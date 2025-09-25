@@ -1,10 +1,8 @@
 package com.ast.storagemdp_api.mappers;
 
-import com.ast.storagemdp_api.dto.InventoryMovementDTO;
+import com.ast.storagemdp_api.dtos.InventoryMovementDTO;
 import com.ast.storagemdp_api.models.InventoryMovementModel;
 import com.ast.storagemdp_api.models.ProductModel;
-
-import java.util.Objects;
 
 public class InventoryMovementMapper {
     public static InventoryMovementDTO toDTO(InventoryMovementModel entity){

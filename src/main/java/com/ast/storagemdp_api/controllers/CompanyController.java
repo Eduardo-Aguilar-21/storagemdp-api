@@ -1,11 +1,8 @@
 package com.ast.storagemdp_api.controllers;
 
-import com.ast.storagemdp_api.dto.CompanyDTO;
-import com.ast.storagemdp_api.mappers.CompanyMapper;
+
+import com.ast.storagemdp_api.dtos.CompanyDTO;
 import com.ast.storagemdp_api.services.CompanyService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,21 +22,32 @@ public class CompanyController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CompanyDTO> getCompanyById(@PathVariable Long id) {
-        return companyService.findById(id)
-                .map(company -> ResponseEntity.ok(CompanyMapper.toDTO(company)))
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            CompanyDTO company = companyService.findById(id);
+            return ResponseEntity.ok(company);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping
     public ResponseEntity<List<CompanyDTO>> getAllCompanies() {
-        List<CompanyDTO> companies = companyService.findAll()
-                .stream()
-                .map(CompanyMapper::toDTO)
-                .toList();
-
+        List<CompanyDTO> companies = companyService.findAll();
         return companies.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(companies);
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<CompanyDTO>> getAllCompaniesPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<CompanyDTO> companyPage = companyService.findAll(pageable);
+        return companyPage.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(companyPage);
     }
 
     @PostMapping

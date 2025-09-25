@@ -1,6 +1,6 @@
 package com.ast.storagemdp_api.controllers;
 
-import com.ast.storagemdp_api.dto.CategoryDTO;
+import com.ast.storagemdp_api.dtos.CategoryDTO;
 import com.ast.storagemdp_api.mappers.CategoryMapper;
 import com.ast.storagemdp_api.models.CategoryModel;
 import com.ast.storagemdp_api.services.CategoryService;
@@ -22,30 +22,29 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDTO> findById(@PathVariable Long id){
-        return categoryService.findById(id)
-                .map(category -> ResponseEntity.ok(CategoryMapper.toDTO(category)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            CategoryDTO category = categoryService.findById(id);
+            return ResponseEntity.ok(category);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping
     public ResponseEntity<List<CategoryDTO>> findAll(){
-        List<CategoryDTO> categories  = categoryService.findAll()
-                .stream()
-                .map(CategoryMapper::toDTO)
-                .toList();
-
+        List<CategoryDTO> categories = categoryService.findAll();
         return categories.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(categories);
     }
 
-    @GetMapping("/page")
-    public ResponseEntity<Page<CategoryDTO>> findAll(@RequestParam(defaultValue = "0") int page,
-                                                     @RequestParam(defaultValue = "10") int size){
-        Pageable pageable = PageRequest.of(page, size);
-        Page<CategoryDTO> categoryDTOPage = categoryService.findAll(pageable)
-                .map(CategoryMapper::toDTO);
 
+    @GetMapping("/page")
+    public ResponseEntity<Page<CategoryDTO>> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<CategoryDTO> categoryDTOPage = categoryService.findAll(pageable);
         return categoryDTOPage.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(categoryDTOPage);
@@ -68,13 +67,12 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        Optional<CategoryModel> existing = categoryService.findById(id);
-        if (existing.isEmpty()) {
+        try {
+            categoryService.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
-
-        categoryService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 
 }

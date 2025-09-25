@@ -1,14 +1,18 @@
 package com.ast.storagemdp_api.services.impl;
 
-import com.ast.storagemdp_api.dto.CompanyDTO;
+import com.ast.storagemdp_api.dtos.CompanyDTO;
 import com.ast.storagemdp_api.mappers.CompanyMapper;
 import com.ast.storagemdp_api.models.CompanyModel;
 import com.ast.storagemdp_api.repositories.CompanyRepository;
 import com.ast.storagemdp_api.services.CompanyService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CompanyServiceImpl implements CompanyService {
@@ -20,13 +24,27 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Optional<CompanyModel> findById(Long id) {
-        return companyRepository.findById(id);
+    public CompanyDTO findById(Long id) {
+        CompanyModel entity = companyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Company not found with id: " + id));
+        return CompanyMapper.toDTO(entity);
     }
 
     @Override
-    public List<CompanyModel> findAll() {
-        return companyRepository.findAll();
+    public List<CompanyDTO> findAll() {
+        return companyRepository.findAll()
+                .stream()
+                .map(CompanyMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<CompanyDTO> findAll(Pageable pageable) {
+        Page<CompanyModel> page = companyRepository.findAll(pageable);
+        List<CompanyDTO> dtos = page.stream()
+                .map(CompanyMapper::toDTO)
+                .collect(Collectors.toList());
+        return new PageImpl<>(dtos, pageable, page.getTotalElements());
     }
 
     @Override

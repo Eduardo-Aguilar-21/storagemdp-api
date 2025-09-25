@@ -1,6 +1,6 @@
 package com.ast.storagemdp_api.services;
 
-import com.ast.storagemdp_api.dto.UserDTO;
+import com.ast.storagemdp_api.dtos.UserDTO;
 import com.ast.storagemdp_api.models.UserModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    Optional<UserModel> findById(Long id);
+    UserDTO findById(Long id);
 
-    Optional<UserModel> findByUsername(String username);
+    UserDTO findByUsername(String username);
 
-    Optional<UserModel> findByEmail(String email);
+    UserDTO findByEmail(String email);
 
-    List<UserModel> findAll();
+    List<UserDTO> findAll();
 
-    Page<UserModel> findAll(Pageable pageable);
+    Page<UserDTO> findAll(Pageable pageable);
 
     UserDTO save(UserDTO userDTO);
 

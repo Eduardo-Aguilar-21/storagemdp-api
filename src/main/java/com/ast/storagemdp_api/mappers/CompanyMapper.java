@@ -1,6 +1,6 @@
 package com.ast.storagemdp_api.mappers;
 
-import com.ast.storagemdp_api.dto.CompanyDTO;
+import com.ast.storagemdp_api.dtos.CompanyDTO;
 import com.ast.storagemdp_api.models.CompanyModel;
 
 public class CompanyMapper {

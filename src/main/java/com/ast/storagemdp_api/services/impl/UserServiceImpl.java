@@ -1,16 +1,18 @@
 package com.ast.storagemdp_api.services.impl;
 
-import com.ast.storagemdp_api.dto.UserDTO;
+import com.ast.storagemdp_api.dtos.UserDTO;
 import com.ast.storagemdp_api.mappers.UserMapper;
 import com.ast.storagemdp_api.models.UserModel;
 import com.ast.storagemdp_api.repositories.UserRepository;
 import com.ast.storagemdp_api.services.UserService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -22,28 +24,41 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserModel> findById(Long id) {
-        return userRepository.findById(id);
+    public UserDTO findById(Long id) {
+        UserModel user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        return UserMapper.toDTO(user);
     }
 
     @Override
-    public Optional<UserModel> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public UserDTO findByUsername(String username) {
+        UserModel user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+        return UserMapper.toDTO(user);
     }
 
     @Override
-    public Optional<UserModel> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public UserDTO findByEmail(String email) {
+        UserModel user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        return UserMapper.toDTO(user);
     }
 
     @Override
-    public List<UserModel> findAll() {
-        return userRepository.findAll();
+    public List<UserDTO> findAll() {
+        return userRepository.findAll()
+                .stream()
+                .map(UserMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Page<UserModel> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable);
+    public Page<UserDTO> findAll(Pageable pageable) {
+        Page<UserModel> page = userRepository.findAll(pageable);
+        List<UserDTO> dtos = page.stream()
+                .map(UserMapper::toDTO)
+                .collect(Collectors.toList());
+        return new PageImpl<>(dtos, pageable, page.getTotalElements());
     }
 
     @Override

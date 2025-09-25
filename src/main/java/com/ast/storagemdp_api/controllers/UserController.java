@@ -1,6 +1,6 @@
 package com.ast.storagemdp_api.controllers;
 
-import com.ast.storagemdp_api.dto.UserDTO;
+import com.ast.storagemdp_api.dtos.UserDTO;
 import com.ast.storagemdp_api.mappers.UserMapper;
 import com.ast.storagemdp_api.models.UserModel;
 import com.ast.storagemdp_api.services.UserService;
@@ -24,39 +24,37 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-        List<UserDTO> users = userService.findAll()
-                .stream()
-                .map(UserMapper::toDTO)
-                .toList();
-        return ResponseEntity.ok(users);
+        List<UserDTO> users = userService.findAll();
+        return users.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(users);
     }
 
     @GetMapping("/page")
     public ResponseEntity<Page<UserDTO>> getAllUsers(Pageable pageable) {
-        Page<UserDTO> users = userService.findAll(pageable)
-                .map(UserMapper::toDTO);
-        return ResponseEntity.ok(users);
+        Page<UserDTO> users = userService.findAll(pageable);
+        return users.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-        Optional<UserModel> user = userService.findById(id);
-        return user.map(u -> ResponseEntity.ok(UserMapper.toDTO(u)))
-                .orElse(ResponseEntity.notFound().build());
+        UserDTO user = userService.findById(id);
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/username/{username}")
     public ResponseEntity<UserDTO> getByUsername(@PathVariable String username) {
-        Optional<UserModel> user = userService.findByUsername(username);
-        return user.map(u -> ResponseEntity.ok(UserMapper.toDTO(u)))
-                .orElse(ResponseEntity.notFound().build());
+        UserDTO user = userService.findByUsername(username);
+        return ResponseEntity.ok(user);
     }
+
 
     @GetMapping("/email/{email}")
     public ResponseEntity<UserDTO> getByEmail(@PathVariable String email) {
-        Optional<UserModel> user = userService.findByEmail(email);
-        return user.map(u -> ResponseEntity.ok(UserMapper.toDTO(u)))
-                .orElse(ResponseEntity.notFound().build());
+        UserDTO user = userService.findByEmail(email);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping

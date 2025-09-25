@@ -1,6 +1,6 @@
 package com.ast.storagemdp_api.mappers;
 
-import com.ast.storagemdp_api.dto.CategoryDTO;
+import com.ast.storagemdp_api.dtos.CategoryDTO;
 import com.ast.storagemdp_api.models.CategoryModel;
 
 public class CategoryMapper {

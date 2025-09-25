@@ -1,6 +1,6 @@
 package com.ast.storagemdp_api.mappers;
 
-import com.ast.storagemdp_api.dto.ProductDTO;
+import com.ast.storagemdp_api.dtos.ProductDTO;
 import com.ast.storagemdp_api.models.CategoryModel;
 import com.ast.storagemdp_api.models.ProductModel;
 

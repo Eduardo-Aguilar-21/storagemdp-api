@@ -1,4 +1,4 @@
-package com.ast.storagemdp_api.dto;
+package com.ast.storagemdp_api.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,8 +1,7 @@
 package com.ast.storagemdp_api.services;
 
-import com.ast.storagemdp_api.dto.InventoryMovementDTO;
+import com.ast.storagemdp_api.dtos.InventoryMovementDTO;
 import com.ast.storagemdp_api.models.InventoryMovementModel;
-import com.ast.storagemdp_api.models.ProductModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -10,15 +9,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InventoryMovementService {
-    Optional<InventoryMovementModel> findById(Long id);
+    InventoryMovementDTO findById(Long id);
 
-    List<InventoryMovementModel> findByProductModelId(Long productId);
+    List<InventoryMovementDTO> findByProductId(Long productId);
 
-    Page<InventoryMovementModel> findByProductModelId(Long productId, Pageable pageable);
+    Page<InventoryMovementDTO> findByProductId(Long productId, Pageable pageable);
 
-    List<InventoryMovementModel> findAll();
+    List<InventoryMovementDTO> findAll();
 
-    Page<InventoryMovementModel> findAll(Pageable pageable);
+    Page<InventoryMovementDTO> findAll(Pageable pageable);
 
     InventoryMovementDTO save(InventoryMovementDTO inventoryMovementDTO);
 

@@ -1,4 +1,4 @@
-package com.ast.storagemdp_api.dto;
+package com.ast.storagemdp_api.dtos;
 
 import com.ast.storagemdp_api.enums.MovementType;
 import lombok.AllArgsConstructor;

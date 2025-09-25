@@ -1,18 +1,19 @@
 package com.ast.storagemdp_api.services.impl;
 
-import com.ast.storagemdp_api.dto.InventoryMovementDTO;
+import com.ast.storagemdp_api.dtos.InventoryMovementDTO;
 import com.ast.storagemdp_api.mappers.InventoryMovementMapper;
 import com.ast.storagemdp_api.models.InventoryMovementModel;
-import com.ast.storagemdp_api.models.ProductModel;
 import com.ast.storagemdp_api.repositories.InventoryMovementRepository;
 import com.ast.storagemdp_api.services.InventoryMovementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,28 +22,44 @@ public class InventoryMovementServiceImpl implements InventoryMovementService {
     private final InventoryMovementRepository inventoryMovementRepository;
 
     @Override
-    public Optional<InventoryMovementModel> findById(Long id){
-        return inventoryMovementRepository.findById(id);
+    public InventoryMovementDTO findById(Long id) {
+        InventoryMovementModel entity = inventoryMovementRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("InventoryMovement not found with id: " + id));
+        return InventoryMovementMapper.toDTO(entity);
     }
 
     @Override
-    public List<InventoryMovementModel> findByProductModelId(Long productId){
-        return inventoryMovementRepository.findByProductModelId(productId);
+    public List<InventoryMovementDTO> findByProductId(Long productId) {
+        return inventoryMovementRepository.findByProductModelId(productId)
+                .stream()
+                .map(InventoryMovementMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Page<InventoryMovementModel> findByProductModelId(Long productId, Pageable pageable){
-        return inventoryMovementRepository.findByProductModelId(productId, pageable);
+    public Page<InventoryMovementDTO> findByProductId(Long productId, Pageable pageable) {
+        Page<InventoryMovementModel> page = inventoryMovementRepository.findByProductModelId(productId, pageable);
+        List<InventoryMovementDTO> dtos = page.stream()
+                .map(InventoryMovementMapper::toDTO)
+                .collect(Collectors.toList());
+        return new PageImpl<>(dtos, pageable, page.getTotalElements());
     }
 
     @Override
-    public List<InventoryMovementModel> findAll(){
-        return inventoryMovementRepository.findAll();
+    public List<InventoryMovementDTO> findAll() {
+        return inventoryMovementRepository.findAll()
+                .stream()
+                .map(InventoryMovementMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Page<InventoryMovementModel> findAll(Pageable pageable){
-        return inventoryMovementRepository.findAll(pageable);
+    public Page<InventoryMovementDTO> findAll(Pageable pageable) {
+        Page<InventoryMovementModel> page = inventoryMovementRepository.findAll(pageable);
+        List<InventoryMovementDTO> dtos = page.stream()
+                .map(InventoryMovementMapper::toDTO)
+                .collect(Collectors.toList());
+        return new PageImpl<>(dtos, pageable, page.getTotalElements());
     }
 
     @Override

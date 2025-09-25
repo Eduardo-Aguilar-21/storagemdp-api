@@ -1,6 +1,6 @@
 package com.ast.storagemdp_api.mappers;
 
-import com.ast.storagemdp_api.dto.UserDTO;
+import com.ast.storagemdp_api.dtos.UserDTO;
 import com.ast.storagemdp_api.models.UserModel;
 
 public class UserMapper {
