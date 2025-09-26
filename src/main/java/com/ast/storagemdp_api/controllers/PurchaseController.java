@@ -1,134 +1,156 @@
 package com.ast.storagemdp_api.controllers;
 
 import com.ast.storagemdp_api.dtos.PurchaseDTO;
-import com.ast.storagemdp_api.models.CompanyModel;
-import com.ast.storagemdp_api.models.SupplierModel;
 import com.ast.storagemdp_api.services.PurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/purchases")
 public class PurchaseController {
 
+    private final PurchaseService purchaseService;
+
     @Autowired
-    private PurchaseService purchaseService;
+    public PurchaseController(PurchaseService purchaseService) {
+        this.purchaseService = purchaseService;
+    }
+
+    /** ---------------- CRUD ---------------- */
 
     @GetMapping("/{id}")
-    public PurchaseDTO getPurchaseById(@PathVariable Long id) {
-        return purchaseService.getPurchaseById(id);
+    public ResponseEntity<PurchaseDTO> getPurchaseById(@PathVariable Long id) {
+        PurchaseDTO dto = purchaseService.getPurchaseById(id);
+        return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public PurchaseDTO createPurchase(@RequestBody PurchaseDTO purchaseDTO) {
-        return purchaseService.createPurchase(purchaseDTO);
+    public ResponseEntity<PurchaseDTO> createPurchase(@RequestBody PurchaseDTO purchaseDTO) {
+        PurchaseDTO saved = purchaseService.createPurchase(purchaseDTO);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public PurchaseDTO updatePurchase(@PathVariable Long id, @RequestBody PurchaseDTO purchaseDTO) {
-        return purchaseService.updatePurchase(id, purchaseDTO);
+    public ResponseEntity<PurchaseDTO> updatePurchase(@PathVariable Long id, @RequestBody PurchaseDTO purchaseDTO) {
+        PurchaseDTO updated = purchaseService.updatePurchase(id, purchaseDTO);
+        return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    public void deletePurchase(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePurchase(@PathVariable Long id) {
         purchaseService.deletePurchase(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/supplier/{supplierId}")
-    public List<PurchaseDTO> getPurchasesBySupplier(@PathVariable Long supplierId) {
-        SupplierModel supplier = new SupplierModel();
-        supplier.setId(supplierId);
-        return purchaseService.getPurchasesBySupplier(supplier);
+    /** ---------------- Búsqueda con filtros ---------------- */
+
+    @GetMapping
+    public ResponseEntity<Page<PurchaseDTO>> searchPurchases(
+            @RequestParam(required = false) Long companyId,
+            @RequestParam(required = false) Long branchId,
+            @RequestParam(required = false) Long supplierId,
+            @RequestParam(required = false) Boolean paid,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            Pageable pageable
+    ) {
+        Page<PurchaseDTO> purchases = purchaseService.searchPurchases(
+                companyId, branchId, supplierId, paid, startDate, endDate, pageable
+        );
+        return ResponseEntity.ok(purchases);
     }
 
-    @GetMapping("/supplier/{supplierId}/paged")
-    public Page<PurchaseDTO> getPurchasesBySupplier(@PathVariable Long supplierId, Pageable pageable) {
-        SupplierModel supplier = new SupplierModel();
-        supplier.setId(supplierId);
-        return purchaseService.getPurchasesBySupplier(supplier, pageable);
+    /** ---------------- Métricas simples (globales) ---------------- */
+
+    @GetMapping("/metrics/count")
+    public ResponseEntity<Long> countPurchasesInMonth(
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return ResponseEntity.ok(purchaseService.countPurchasesInMonth(year, month));
     }
 
-    // Listar compras por proveedor y estado de pago
-    @GetMapping("/supplier/{supplierId}/paid/{paid}")
-    public List<PurchaseDTO> getPurchasesBySupplierAndPaid(@PathVariable Long supplierId, @PathVariable Boolean paid) {
-        SupplierModel supplier = new SupplierModel();
-        supplier.setId(supplierId);
-        return purchaseService.getPurchasesBySupplierAndPaid(supplier, paid);
+    @GetMapping("/metrics/total")
+    public ResponseEntity<Double> getTotalSpentInMonth(
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return ResponseEntity.ok(purchaseService.getTotalSpentInMonth(year, month));
     }
 
-    // Listar compras por proveedor y estado de pago con paginación
-    @GetMapping("/supplier/{supplierId}/paid/{paid}/paged")
-    public Page<PurchaseDTO> getPurchasesBySupplierAndPaid(@PathVariable Long supplierId,
-                                                           @PathVariable Boolean paid,
-                                                           Pageable pageable) {
-        SupplierModel supplier = new SupplierModel();
-        supplier.setId(supplierId);
-        return purchaseService.getPurchasesBySupplierAndPaid(supplier, paid, pageable);
+    @GetMapping("/metrics/average")
+    public ResponseEntity<Double> getAveragePerPurchaseInMonth(
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return ResponseEntity.ok(purchaseService.getAveragePerPurchaseInMonth(year, month));
     }
 
-    @GetMapping("/date/{date}")
-    public List<PurchaseDTO> getPurchasesByDate(@PathVariable String date) {
-        LocalDate localDate = LocalDate.parse(date);
-        return purchaseService.getPurchasesByDate(localDate);
-    }
+    /** ---------------- Métricas por Empresa ---------------- */
 
-    @GetMapping("/date/{date}/paged")
-    public Page<PurchaseDTO> getPurchasesByDate(@PathVariable String date, Pageable pageable) {
-        LocalDate localDate = LocalDate.parse(date);
-        return purchaseService.getPurchasesByDate(localDate, pageable);
-    }
-
-    // Todas las compras de la empresa, paginadas y ordenadas descendente
-    @GetMapping("/company/{companyId}/paged/desc")
-    public Page<PurchaseDTO> getAllPurchasesByCompanyPagedDesc(@PathVariable Long companyId, Pageable pageable) {
-        CompanyModel company = new CompanyModel();
-        company.setId(companyId);
-        return purchaseService.getAllPurchasesByCompanyPagedDesc(company, pageable);
-    }
-
-    // Compras de un proveedor específico de la empresa, paginadas y ordenadas descendente
-    @GetMapping("/company/{companyId}/supplier/{supplierId}/paged/desc")
-    public Page<PurchaseDTO> getPurchasesByCompanyAndSupplierPagedDesc(
+    @GetMapping("/metrics/company/{companyId}/count")
+    public ResponseEntity<Long> countPurchasesInMonthByCompany(
             @PathVariable Long companyId,
-            @PathVariable Long supplierId,
-            Pageable pageable) {
-        CompanyModel company = new CompanyModel();
-        company.setId(companyId);
-        SupplierModel supplier = new SupplierModel();
-        supplier.setId(supplierId);
-        return purchaseService.getPurchasesByCompanyAndSupplierPagedDesc(company, supplier, pageable);
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return ResponseEntity.ok(purchaseService.countPurchasesInMonthByCompany(companyId, year, month));
     }
 
-    @GetMapping("/kpi/current-month")
-    public ResponseEntity<Long> getPurchasesCurrentMonth() {
-        LocalDate now = LocalDate.now();
-        long count = purchaseService.countPurchasesInMonth(now.getYear(), now.getMonthValue());
-        return ResponseEntity.ok(count);
+    @GetMapping("/metrics/company/{companyId}/total")
+    public ResponseEntity<Double> getTotalSpentInMonthByCompany(
+            @PathVariable Long companyId,
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return ResponseEntity.ok(purchaseService.getTotalSpentInMonthByCompany(companyId, year, month));
     }
 
-    @GetMapping("/kpi/total-month")
-    public ResponseEntity<Double> getTotalSpentCurrentMonth() {
-        LocalDate now = LocalDate.now();
-        double total = purchaseService.getTotalSpentInMonth(now.getYear(), now.getMonthValue());
-        return ResponseEntity.ok(total);
+    @GetMapping("/metrics/company/{companyId}/average")
+    public ResponseEntity<Double> getAveragePerPurchaseInMonthByCompany(
+            @PathVariable Long companyId,
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return ResponseEntity.ok(purchaseService.getAveragePerPurchaseInMonthByCompany(companyId, year, month));
     }
 
-    @GetMapping("/kpi/average-per-purchase")
-    public ResponseEntity<Double> getAveragePerPurchase(
-            @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) Integer month) {
+    /** ---------------- Métricas por Empresa + Sede ---------------- */
 
-        LocalDate now = LocalDate.now();
-        int y = (year != null) ? year : now.getYear();
-        int m = (month != null) ? month : now.getMonthValue();
+    @GetMapping("/metrics/company/{companyId}/branch/{branchId}/count")
+    public ResponseEntity<Long> countPurchasesInMonthByCompanyAndBranch(
+            @PathVariable Long companyId,
+            @PathVariable Long branchId,
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return ResponseEntity.ok(purchaseService.countPurchasesInMonthByCompanyAndBranch(companyId, branchId, year, month));
+    }
 
-        double average = purchaseService.getAveragePerPurchaseInMonth(y, m);
-        return ResponseEntity.ok(average);
+    @GetMapping("/metrics/company/{companyId}/branch/{branchId}/total")
+    public ResponseEntity<Double> getTotalSpentInMonthByCompanyAndBranch(
+            @PathVariable Long companyId,
+            @PathVariable Long branchId,
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return ResponseEntity.ok(purchaseService.getTotalSpentInMonthByCompanyAndBranch(companyId, branchId, year, month));
+    }
+
+    @GetMapping("/metrics/company/{companyId}/branch/{branchId}/average")
+    public ResponseEntity<Double> getAveragePerPurchaseInMonthByCompanyAndBranch(
+            @PathVariable Long companyId,
+            @PathVariable Long branchId,
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return ResponseEntity.ok(purchaseService.getAveragePerPurchaseInMonthByCompanyAndBranch(companyId, branchId, year, month));
     }
 }
