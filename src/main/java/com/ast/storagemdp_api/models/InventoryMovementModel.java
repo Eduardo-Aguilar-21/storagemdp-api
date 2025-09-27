@@ -14,7 +14,11 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "inventory_movements")
+@Table(name = "inventory_movements", indexes = {
+        @Index(name = "idx_inventory_movement_inventory", columnList = "inventory_id"),
+        @Index(name = "idx_inventory_movement_company", columnList = "company_id"),
+        @Index(name = "idx_inventory_movement_branch", columnList = "branch_id")
+})
 public class InventoryMovementModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,9 +31,17 @@ public class InventoryMovementModel {
     @Column(nullable = false)
     private Integer quantity;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private ProductModel product;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "inventory_id", nullable = false)
+    private InventoryModel inventory;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
+    private CompanyModel company;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "branch_id", nullable = false)
+    private BranchModel branch;
 
     private String createdBy;
 

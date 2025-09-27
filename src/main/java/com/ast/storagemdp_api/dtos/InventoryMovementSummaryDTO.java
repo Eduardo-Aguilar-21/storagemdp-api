@@ -7,10 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductDTO {
-    private Long id;
-    private String name;
-    private String barcode;
-    private Long categoryId;
-    private String categoryName;
+public class InventoryMovementSummaryDTO {
+    private Long totalEntries;
+    private Long totalExits;
+    private Long totalMovements;
 }

@@ -13,7 +13,13 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "purchase_items")
+@Table(
+        name = "purchase_items",
+        indexes = {
+                @Index(name = "idx_purchase_item_purchase", columnList = "purchase_id"),
+                @Index(name = "idx_purchase_item_product", columnList = "product_id")
+        }
+)
 public class PurchaseItemModel {
 
     @Id

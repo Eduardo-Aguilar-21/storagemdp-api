@@ -151,10 +151,11 @@ public class PurchaseServiceImpl implements PurchaseService {
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
 
-        Specification<PurchaseModel> spec = Specification
-                .where(PurchaseSpecifications.hasCompany(companyId))
-                .and(PurchaseSpecifications.hasBranch(branchId))
-                .and(PurchaseSpecifications.purchaseDateBetween(start, end));
+        Specification<PurchaseModel> spec = Specification.allOf(
+                PurchaseSpecifications.hasCompany(companyId),
+                PurchaseSpecifications.hasBranch(branchId),
+                PurchaseSpecifications.purchaseDateBetween(start, end)
+        );
 
         return purchaseRepository.count(spec);
     }
@@ -164,15 +165,17 @@ public class PurchaseServiceImpl implements PurchaseService {
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
 
-        Specification<PurchaseModel> spec = Specification
-                .where(PurchaseSpecifications.hasCompany(companyId))
-                .and(PurchaseSpecifications.hasBranch(branchId))
-                .and(PurchaseSpecifications.purchaseDateBetween(start, end));
+        Specification<PurchaseModel> spec = Specification.allOf(
+                PurchaseSpecifications.hasCompany(companyId),
+                PurchaseSpecifications.hasBranch(branchId),
+                PurchaseSpecifications.purchaseDateBetween(start, end)
+        );
 
         return purchaseRepository.findAll(spec).stream()
                 .mapToDouble(PurchaseModel::getTotalAmount)
                 .sum();
     }
+
 
     @Override
     public double getAveragePerPurchaseInMonthByCompanyAndBranch(Long companyId, Long branchId, int year, int month) {

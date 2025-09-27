@@ -13,7 +13,15 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "suppliers")
+@Table(
+        name = "suppliers",
+        indexes = {
+                @Index(name = "idx_supplier_company", columnList = "company_id"),
+                @Index(name = "idx_supplier_name", columnList = "name"),
+                @Index(name = "idx_supplier_taxid", columnList = "taxId"),
+                @Index(name = "idx_supplier_active", columnList = "active")
+        }
+)
 public class SupplierModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

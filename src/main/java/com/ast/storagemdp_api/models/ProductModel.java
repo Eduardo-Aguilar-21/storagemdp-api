@@ -9,13 +9,19 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "products")
+@Table(
+        name = "products",
+        indexes = {
+                @Index(name = "idx_product_name", columnList = "name"),
+                @Index(name = "idx_product_barcode", columnList = "barcode"),
+                @Index(name = "idx_product_category", columnList = "category_id")
+        }
+)
 public class ProductModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,17 +30,12 @@ public class ProductModel {
 
     private String name;
 
-    private Double price;
-
-    private Integer quantity;
+    @Column(unique = true)
+    private String barcode;
 
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
     private CategoryModel category;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<InventoryMovementModel> movements;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp

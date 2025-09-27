@@ -15,7 +15,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "purchases")
+@Table(
+        name = "purchases",
+        indexes = {
+                @Index(name = "idx_purchase_supplier", columnList = "supplier_id"),
+                @Index(name = "idx_purchase_company", columnList = "company_id"),
+                @Index(name = "idx_purchase_branch", columnList = "branch_id"),
+                @Index(name = "idx_purchase_date", columnList = "purchaseDate"),
+                @Index(name = "idx_purchase_invoice", columnList = "invoiceNumber")
+        }
+)
 public class PurchaseModel  {
 
     @Id

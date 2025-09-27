@@ -1,6 +1,7 @@
 package com.ast.storagemdp_api.mappers;
 
 import com.ast.storagemdp_api.dtos.InventoryMovementDTO;
+import com.ast.storagemdp_api.models.InventoryModel;
 import com.ast.storagemdp_api.models.InventoryMovementModel;
 import com.ast.storagemdp_api.models.ProductModel;
 
@@ -14,11 +15,19 @@ public class InventoryMovementMapper {
         dto.setId(entity.getId());
         dto.setType(entity.getType());
         dto.setQuantity(entity.getQuantity());
-        dto.setProductId(entity.getProduct() != null ? entity.getProduct().getId() : null);
-        dto.setProductName(entity.getProduct() != null ? entity.getProduct().getName() : null);
         dto.setCreatedBy(entity.getCreatedBy());
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setUpdatedAt(entity.getUpdatedAt());
+
+        if (entity.getInventory() != null) {
+            dto.setInventoryId(entity.getInventory().getId());
+
+            if (entity.getInventory().getProduct() != null) {
+                dto.setProductId(entity.getInventory().getProduct().getId());
+                dto.setProductName(entity.getInventory().getProduct().getName());
+            }
+        }
+
         return dto;
     }
 
@@ -33,11 +42,12 @@ public class InventoryMovementMapper {
         entity.setQuantity(dto.getQuantity());
         entity.setCreatedBy(dto.getCreatedBy());
 
-        if (dto.getProductId() != null) {
-            ProductModel product = new ProductModel();
-            product.setId(dto.getProductId());
-            entity.setProduct(product);
+        if (dto.getInventoryId() != null) {
+            InventoryModel inventory = new InventoryModel();
+            inventory.setId(dto.getInventoryId());
+            entity.setInventory(inventory);
         }
+
         return entity;
     }
 }

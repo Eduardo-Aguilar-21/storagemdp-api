@@ -20,10 +20,10 @@ public class PurchaseSpecifications {
                 : cb.equal(root.get("branch").get("id"), branchId);
     }
 
-    public static Specification<PurchaseModel> hasSupplier(SupplierModel supplier) {
-        return (root, query, cb) -> supplier == null
+    public static Specification<PurchaseModel> hasSupplier(Long supplierId) {
+        return (root, query, cb) -> supplierId == null
                 ? null
-                : cb.equal(root.get("supplier"), supplier);
+                : cb.equal(root.get("supplier").get("id"), supplierId);
     }
 
     public static Specification<PurchaseModel> isPaid(Boolean paid) {

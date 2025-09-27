@@ -1,23 +1,25 @@
 package com.ast.storagemdp_api.dtos;
 
-import com.ast.storagemdp_api.enums.MovementType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.ZonedDateTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class InventoryMovementDTO {
+public class InventoryDTO {
     private Long id;
-    private MovementType type;
+
+    private Double price;
     private Integer quantity;
-    private Long inventoryId;
+
     private Long productId;
     private String productName;
-    private String createdBy;
-    private ZonedDateTime createdAt;
-    private ZonedDateTime updatedAt;
+    private String productBarcode;
+
+    private Long companyId;
+    private String companyName;
+
+    private Long branchId;
+    private String branchName;
 }

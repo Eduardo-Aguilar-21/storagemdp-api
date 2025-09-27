@@ -13,8 +13,7 @@ public class ProductMapper {
         ProductDTO dto = new ProductDTO();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
-        dto.setPrice(entity.getPrice());
-        dto.setQuantity(entity.getQuantity());
+        dto.setBarcode(entity.getBarcode());
         dto.setCategoryId(entity.getCategory() != null ? entity.getCategory().getId() : null);
         dto.setCategoryName(entity.getCategory() != null ? entity.getCategory().getName() : null);
         return dto;
@@ -28,8 +27,7 @@ public class ProductMapper {
         ProductModel entity = new ProductModel();
         entity.setId(dto.getId());
         entity.setName(dto.getName());
-        entity.setPrice(dto.getPrice());
-        entity.setQuantity(dto.getQuantity());
+        entity.setBarcode(dto.getBarcode());
 
         if (dto.getCategoryId() != null) {
             CategoryModel category = new CategoryModel();

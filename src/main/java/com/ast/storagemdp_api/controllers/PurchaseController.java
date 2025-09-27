@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,33 +25,32 @@ public class PurchaseController {
     /** ---------------- CRUD ---------------- */
 
     @GetMapping("/{id}")
-    public ResponseEntity<PurchaseDTO> getPurchaseById(@PathVariable Long id) {
+    public ResponseEntity<PurchaseDTO> getById(@PathVariable Long id) {
         PurchaseDTO dto = purchaseService.getPurchaseById(id);
         return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<PurchaseDTO> createPurchase(@RequestBody PurchaseDTO purchaseDTO) {
-        PurchaseDTO saved = purchaseService.createPurchase(purchaseDTO);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    public ResponseEntity<PurchaseDTO> create(@RequestBody PurchaseDTO purchaseDTO) {
+        return ResponseEntity.ok(purchaseService.createPurchase(purchaseDTO));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PurchaseDTO> updatePurchase(@PathVariable Long id, @RequestBody PurchaseDTO purchaseDTO) {
+    public ResponseEntity<PurchaseDTO> update(@PathVariable Long id, @RequestBody PurchaseDTO purchaseDTO) {
         PurchaseDTO updated = purchaseService.updatePurchase(id, purchaseDTO);
         return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePurchase(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         purchaseService.deletePurchase(id);
         return ResponseEntity.noContent().build();
     }
 
-    /** ---------------- Búsqueda con filtros ---------------- */
+    /** ---------------- Búsqueda ---------------- */
 
     @GetMapping
-    public ResponseEntity<Page<PurchaseDTO>> searchPurchases(
+    public ResponseEntity<Page<PurchaseDTO>> search(
             @RequestParam(required = false) Long companyId,
             @RequestParam(required = false) Long branchId,
             @RequestParam(required = false) Long supplierId,
@@ -61,32 +59,30 @@ public class PurchaseController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             Pageable pageable
     ) {
-        Page<PurchaseDTO> purchases = purchaseService.searchPurchases(
-                companyId, branchId, supplierId, paid, startDate, endDate, pageable
-        );
-        return ResponseEntity.ok(purchases);
+        Page<PurchaseDTO> results = purchaseService.searchPurchases(companyId, branchId, supplierId, paid, startDate, endDate, pageable);
+        return ResponseEntity.ok(results);
     }
 
-    /** ---------------- Métricas simples (globales) ---------------- */
+    /** ---------------- Métricas globales ---------------- */
 
-    @GetMapping("/metrics/count")
-    public ResponseEntity<Long> countPurchasesInMonth(
+    @GetMapping("/metrics/global/count")
+    public ResponseEntity<Long> countGlobal(
             @RequestParam int year,
             @RequestParam int month
     ) {
         return ResponseEntity.ok(purchaseService.countPurchasesInMonth(year, month));
     }
 
-    @GetMapping("/metrics/total")
-    public ResponseEntity<Double> getTotalSpentInMonth(
+    @GetMapping("/metrics/global/total")
+    public ResponseEntity<Double> totalGlobal(
             @RequestParam int year,
             @RequestParam int month
     ) {
         return ResponseEntity.ok(purchaseService.getTotalSpentInMonth(year, month));
     }
 
-    @GetMapping("/metrics/average")
-    public ResponseEntity<Double> getAveragePerPurchaseInMonth(
+    @GetMapping("/metrics/global/average")
+    public ResponseEntity<Double> averageGlobal(
             @RequestParam int year,
             @RequestParam int month
     ) {
@@ -96,7 +92,7 @@ public class PurchaseController {
     /** ---------------- Métricas por Empresa ---------------- */
 
     @GetMapping("/metrics/company/{companyId}/count")
-    public ResponseEntity<Long> countPurchasesInMonthByCompany(
+    public ResponseEntity<Long> countByCompany(
             @PathVariable Long companyId,
             @RequestParam int year,
             @RequestParam int month
@@ -105,7 +101,7 @@ public class PurchaseController {
     }
 
     @GetMapping("/metrics/company/{companyId}/total")
-    public ResponseEntity<Double> getTotalSpentInMonthByCompany(
+    public ResponseEntity<Double> totalByCompany(
             @PathVariable Long companyId,
             @RequestParam int year,
             @RequestParam int month
@@ -114,7 +110,7 @@ public class PurchaseController {
     }
 
     @GetMapping("/metrics/company/{companyId}/average")
-    public ResponseEntity<Double> getAveragePerPurchaseInMonthByCompany(
+    public ResponseEntity<Double> averageByCompany(
             @PathVariable Long companyId,
             @RequestParam int year,
             @RequestParam int month
@@ -125,7 +121,7 @@ public class PurchaseController {
     /** ---------------- Métricas por Empresa + Sede ---------------- */
 
     @GetMapping("/metrics/company/{companyId}/branch/{branchId}/count")
-    public ResponseEntity<Long> countPurchasesInMonthByCompanyAndBranch(
+    public ResponseEntity<Long> countByCompanyAndBranch(
             @PathVariable Long companyId,
             @PathVariable Long branchId,
             @RequestParam int year,
@@ -135,7 +131,7 @@ public class PurchaseController {
     }
 
     @GetMapping("/metrics/company/{companyId}/branch/{branchId}/total")
-    public ResponseEntity<Double> getTotalSpentInMonthByCompanyAndBranch(
+    public ResponseEntity<Double> totalByCompanyAndBranch(
             @PathVariable Long companyId,
             @PathVariable Long branchId,
             @RequestParam int year,
@@ -145,7 +141,7 @@ public class PurchaseController {
     }
 
     @GetMapping("/metrics/company/{companyId}/branch/{branchId}/average")
-    public ResponseEntity<Double> getAveragePerPurchaseInMonthByCompanyAndBranch(
+    public ResponseEntity<Double> averageByCompanyAndBranch(
             @PathVariable Long companyId,
             @PathVariable Long branchId,
             @RequestParam int year,

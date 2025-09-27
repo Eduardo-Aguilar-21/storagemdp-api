@@ -14,7 +14,14 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(
+        name = "user",
+        indexes = {
+                @Index(name = "idx_user_username", columnList = "username"),
+                @Index(name = "idx_user_email", columnList = "email"),
+                @Index(name = "idx_user_role", columnList = "role")
+        }
+)
 public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
